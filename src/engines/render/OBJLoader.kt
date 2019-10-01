@@ -132,6 +132,5 @@ object OBJLoader {
             normalArr[currentVertex * 3 + 1] = vNormal.y
             normalArr[currentVertex * 3 + 2] = vNormal.z
         } // end for columns face
-
     }
 }

@@ -1,11 +1,10 @@
 package engines.render
 
+import engines.shader.StaticShader
 import entities.Entity
-import models.RawModel
 import models.TexturedModel
 import org.lwjgl.opengl.*
 import org.lwjgl.util.vector.Matrix4f
-import shaders.StaticShader
 import utils.Maths
 
 class EntityRenderer(private val shader: StaticShader, projectionMatrix: Matrix4f) {
@@ -34,6 +33,10 @@ class EntityRenderer(private val shader: StaticShader, projectionMatrix: Matrix4
         GL20.glEnableVertexAttribArray(1) // textureCoords
         GL20.glEnableVertexAttribArray(2) // normals
         val texture = texturedModel.texture
+        if (texture.hasTrasparency) {
+            MasterRenderer.disableCulling()
+        }
+        shader.loadFakeLighting(texture.useFakeLighting)
         shader.loadShine(texture.shineDampener, texture.reflectivity)
         GL13.glActiveTexture(GL13.GL_TEXTURE0)
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.texture.textureID)
@@ -46,6 +49,7 @@ class EntityRenderer(private val shader: StaticShader, projectionMatrix: Matrix4
     }
 
     private fun unbindTexturedModel() {
+        MasterRenderer.enableCulling()
         GL20.glDisableVertexAttribArray(0)
         GL20.glDisableVertexAttribArray(1)
         GL20.glDisableVertexAttribArray(2)

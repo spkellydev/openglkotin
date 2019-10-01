@@ -1,6 +1,7 @@
 package engineTester
 
 import engines.render.*
+import engines.terrains.Terrain
 import entities.Camera
 import entities.Entity
 import entities.Light
@@ -8,36 +9,37 @@ import models.TexturedModel
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 import org.lwjgl.util.vector.Vector3f
-import shaders.StaticShader
 import textures.ModelTexture
-import java.security.Key
 
 class GameLoop {
     companion object {
+        val entities = ArrayList<Entity>()
+
         @JvmStatic
         fun main(args: Array<String>) {
             DisplayManager.createDisplay()
             Display.setTitle("First Display")
             val loader = Loader()
+            loadMany(loader, "grassModel", "grassTexture")
+            loadMany(loader, "tree", "tree")
 
-            val model = OBJLoader.loadModel("stall", loader)
-            val texturedModel = TexturedModel(model, ModelTexture(loader.loadTexture("stallTexture")))
-            val texture = texturedModel.texture
-            texture.shineDampener = 10f
-            texture.reflectivity = 1f
+            val light = Light(Vector3f(3000f, 2000f, 2000f), Vector3f(1f,1f,1f))
 
-            val entity = Entity(texturedModel, Vector3f(0f, 0f, -50f),
-                0f, 0f, 0f, 1f)
-            val light = Light(Vector3f(200f, 200f, 100f), Vector3f(1f,1f,1f))
+            val terrain = Terrain(0, 0, loader, ModelTexture(loader.loadTexture("grass")))
+            val terrain2 = Terrain(1, 0, loader, ModelTexture(loader.loadTexture("grass")))
+            val terrain3 = Terrain(2, 0, loader, ModelTexture(loader.loadTexture("grass")))
+
             val camera = Camera()
             val masterRenderer = MasterRenderer()
+            with(camera.position) { y += 5f; z += 50f }
 
             while(!Display.isCloseRequested()) {
-                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
-                    entity.increaseRotation(0f, 0.3f, 0f)
-
                 camera.move()
-                masterRenderer.processEntity(entity)
+                masterRenderer.processTerrain(terrain)
+                masterRenderer.processTerrain(terrain2)
+                masterRenderer.processTerrain(terrain3)
+                for (e in entities)
+                    masterRenderer.processEntity(e)
                 masterRenderer.render(light, camera)
                 DisplayManager.updateDisplay()
 
@@ -48,5 +50,23 @@ class GameLoop {
             loader.dispose()
             DisplayManager.closeDisplay()
         }
+
+        private fun loadMany(loader: Loader, obj: String, texture: String) {
+            val model = OBJLoader.loadModel(obj, loader)
+            val texturedModel = TexturedModel(model, ModelTexture(loader.loadTexture(texture)))
+            with(texturedModel.texture) {
+                useFakeLighting = true
+                hasTrasparency = true
+                shineDampener = 10f
+                reflectivity = 0f
+            }
+
+            for(i in 0..1000) {
+                val entity = Entity(texturedModel, Vector3f((0..500).random().toFloat(), 0f, (0..500).random().toFloat()),
+                    0f, 0f, 0f, 1f)
+                entities.add(entity)
+            }
+        }
     }
+
 }
