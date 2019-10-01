@@ -55,7 +55,7 @@ object OBJLoader {
                 } else if (line.startsWith("vt ")) { // texture
                     val textureVertex = Vector2f(
                         java.lang.Float.parseFloat(actualLine[1]), // u
-                        java.lang.Float.parseFloat(actualLine[2])
+                        java.lang.Float.parseFloat(actualLine[2])  // v
                     ) // v
                     lTextureMap.add(textureVertex)
                 } else if (line.startsWith("vn ")) { // normals
@@ -102,7 +102,7 @@ object OBJLoader {
             System.exit(-1)
         }
 
-        return loader.loadToVAO(verticesArr!!, textureArr!!, indicesArr!!)
+        return loader.loadToVAO(verticesArr!!, textureArr!!, normalArr!!, indicesArr!!)
     }
 
     private fun processFace(

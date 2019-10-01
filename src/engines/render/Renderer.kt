@@ -10,8 +10,11 @@ import utils.Maths
 
 class Renderer(shader: StaticShader) {
     private lateinit var projectionMatrix: Matrix4f
+    private val shader: StaticShader = shader
 
     init {
+        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glCullFace(GL11.GL_BACK)
         createProjectionMatrix()
         shader.start()
         shader.loadProjectionMatrix(projectionMatrix)
@@ -22,23 +25,43 @@ class Renderer(shader: StaticShader) {
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
-        GL11.glClearColor(0f, 0f, 0f, 0f)
+        GL11.glClearColor(0.5f, 0f, 0f, 0f)
     }
 
-    fun render(entity: Entity, shader: StaticShader) {
-        val model = entity.model.rawModel
+    fun render(entites: HashMap<TexturedModel, ArrayList<Entity>>) {
+        for (model: TexturedModel in entites.keys) {
+            prepareTexturedModel(model)
+            val batch = entites[model]!!
+            for (e: Entity in batch) {
+                prepareInstance(e)
+                GL11.glDrawElements(GL11.GL_TRIANGLES, model.rawModel.vertexCount, GL11.GL_UNSIGNED_INT, 0)
+            }
+            unbindTexturedModel()
+        }
+    }
+
+    fun prepareTexturedModel(texturedModel: TexturedModel) {
+        val model = texturedModel.rawModel
         GL30.glBindVertexArray(model.vaoID)
-        GL20.glEnableVertexAttribArray(0)
-        GL20.glEnableVertexAttribArray(1)
+        GL20.glEnableVertexAttribArray(0) // positions
+        GL20.glEnableVertexAttribArray(1) // textureCoords
+        GL20.glEnableVertexAttribArray(2) // normals
+        val texture = texturedModel.texture
+        shader.loadShine(texture.shineDampener, texture.reflectivity)
+        GL13.glActiveTexture(GL13.GL_TEXTURE0)
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.texture.textureID)
+    }
+
+    fun prepareInstance(entity: Entity) {
         val transformationMatrix = Maths.createTranformationMatrix(
             entity.position, entity.rotX, entity.rotY, entity.rotZ, entity.scale)
         shader.loadTransformationMatrix(transformationMatrix)
+    }
 
-        GL13.glActiveTexture(GL13.GL_TEXTURE0)
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, entity.model.texture.textureID)
-        GL11.glDrawElements(GL11.GL_TRIANGLES, model.vertexCount, GL11.GL_UNSIGNED_INT, 0)
+    fun unbindTexturedModel() {
         GL20.glDisableVertexAttribArray(0)
         GL20.glDisableVertexAttribArray(1)
+        GL20.glDisableVertexAttribArray(2)
         GL30.glBindVertexArray(0)
     }
 

@@ -19,11 +19,12 @@ class Loader {
     private val vbos = ArrayList<Int>()
     private val textures = ArrayList<Int>()
 
-    fun loadToVAO(positions: FloatArray, textureCoordinates: FloatArray, indices: IntArray): RawModel {
+    fun loadToVAO(positions: FloatArray, textureCoordinates: FloatArray, normals: FloatArray, indices: IntArray): RawModel {
         val vaoID = createVAO()
         bindIndicesBuffer(indices)
         storeDataInAttributeList(0, 3, positions)
         storeDataInAttributeList(1, 2, textureCoordinates)
+        storeDataInAttributeList(2, 3, normals)
         unbindVAO()
         return RawModel(vaoID, indices.size)
     }
