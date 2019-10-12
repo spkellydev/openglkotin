@@ -32,12 +32,13 @@ class MasterRenderer {
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
-        GL11.glClearColor(0.5f, 0f, 0f, 0f)
+        GL11.glClearColor(RED, GREEN, BLUE, 0f)
     }
 
     fun render(sun: Light, camera: Camera) {
         prepare()
         shader.start()
+        shader.loadSkyColor(RED, GREEN, BLUE)
         shader.loadLight(sun)
         shader.loadViewMatrix(camera)
         entityRenderer.render(entities)
@@ -93,6 +94,9 @@ class MasterRenderer {
         private const val FOV: Float = 70f
         private const val NEAR_PLANE: Float = 0.1f
         private const val FAR_PLANE: Float = 100f
+        private const val RED = 0.5f
+        private const val BLUE = 0.5f
+        private const val GREEN = 0.5f
 
         fun enableCulling() {
             GL11.glEnable(GL11.GL_CULL_FACE)

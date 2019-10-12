@@ -3,6 +3,7 @@ package engines.shader
 import entities.Camera
 import entities.Light
 import org.lwjgl.util.vector.Matrix4f
+import org.lwjgl.util.vector.Vector3f
 import utils.Maths
 
 class StaticShader: ShaderProgram(
@@ -17,6 +18,7 @@ class StaticShader: ShaderProgram(
     private var locationShineDamper: Int? = null
     private var locationReflectivity: Int? = null
     private var locationUseFakeLighting: Int? = null
+    private var locationSkyColor: Int? = null
 
     override fun bindAttributes() {
         super.bindAttribute(0, "position")
@@ -33,6 +35,11 @@ class StaticShader: ShaderProgram(
         locationShineDamper = super.getUniformLocation("shineDamper")
         locationReflectivity = super.getUniformLocation("reflectivity")
         locationUseFakeLighting = super.getUniformLocation("useFakeLighting")
+        locationSkyColor = super.getUniformLocation("skyColor")
+    }
+
+    fun loadSkyColor(r: Float, g: Float, b: Float) {
+        super.loadVector(locationSkyColor!!, Vector3f(r,g,b))
     }
 
     fun loadTransformationMatrix(matrix4f: Matrix4f) {
