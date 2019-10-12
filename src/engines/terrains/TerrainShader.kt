@@ -4,6 +4,7 @@ import engines.shader.ShaderProgram
 import entities.Camera
 import entities.Light
 import org.lwjgl.util.vector.Matrix4f
+import org.lwjgl.util.vector.Vector3f
 import utils.Maths
 
 class TerrainShader: ShaderProgram(
@@ -17,6 +18,7 @@ class TerrainShader: ShaderProgram(
     private var locationLightColor: Int? = null
     private var locationShineDamper: Int? = null
     private var locationReflectivity: Int? = null
+    private var locationSkyColor: Int? = null
 
     override fun bindAttributes() {
         super.bindAttribute(0, "position")
@@ -32,6 +34,11 @@ class TerrainShader: ShaderProgram(
         locationLightColor = super.getUniformLocation("lightColor")
         locationShineDamper = super.getUniformLocation("shineDamper")
         locationReflectivity = super.getUniformLocation("reflectivity")
+        locationSkyColor = super.getUniformLocation("skyColor")
+    }
+
+    fun loadSkyColor(r: Float, g: Float, b: Float) {
+        super.loadVector(locationSkyColor!!, Vector3f(r, g, b))
     }
 
     fun loadTransformationMatrix(matrix4f: Matrix4f) {

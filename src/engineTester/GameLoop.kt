@@ -1,6 +1,7 @@
 package engineTester
 
 import engines.render.*
+import engines.render.OBJ.OBJLoader
 import engines.terrains.Terrain
 import entities.Camera
 import entities.Entity
@@ -52,7 +53,8 @@ class GameLoop {
         }
 
         private fun loadMany(loader: Loader, obj: String, texture: String) {
-            val model = OBJLoader.loadModel(obj, loader)
+            val modelData = OBJLoader.loadOBJ(obj)
+            val model = loader.loadToVAO(modelData.vertices, modelData.textureCoords, modelData.normals, modelData.indices)
             val texturedModel = TexturedModel(model, ModelTexture(loader.loadTexture(texture)))
             with(texturedModel.texture) {
                 useFakeLighting = true

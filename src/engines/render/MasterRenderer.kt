@@ -2,6 +2,7 @@ package engines.render
 
 import engines.shader.StaticShader
 import engines.terrains.Terrain
+import engines.terrains.TerrainRenderer
 import engines.terrains.TerrainShader
 import entities.Camera
 import entities.Entity
@@ -45,6 +46,7 @@ class MasterRenderer {
         shader.stop()
 
         terrainShader.start()
+        terrainShader.loadSkyColor(RED, GREEN, BLUE)
         terrainShader.loadLight(sun)
         terrainShader.loadViewMatrix(camera)
         terrainRenderer.render(terrains)

@@ -1,4 +1,4 @@
-package engines.render
+package engines.terrains
 
 import engines.terrains.Terrain
 import engines.terrains.TerrainShader
